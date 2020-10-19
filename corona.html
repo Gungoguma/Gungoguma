@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>corona api</title>
+</head>
+<body>
+    <script>
+        var url = 'http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson'; /*URL*/
+        var queryParams = '?' + encodeURIComponent('ServiceKey') + '='+'jcIUkbLrbEACktne0FjnUihbrBs7gOUYb5Vgf39ZDDqt9JEZqoON3f%2BeQr5D9kERtxVIC3iJvODcbroqyBYRhQ%3D%3D';
+        queryParams += '&' + encodeURIComponent('ServiceKey') + '=' + encodeURIComponent('jcIUkbLrbEACktne0FjnUihbrBs7gOUYb5Vgf39ZDDqt9JEZqoON3f%2BeQr5D9kERtxVIC3iJvODcbroqyBYRhQ%3D%3D');
+        queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
+        queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
+        queryParams += '&' + encodeURIComponent('startCreateDt') + '=' + encodeURIComponent('20200310'); /**/
+        queryParams += '&' + encodeURIComponent('endCreateDt') + '=' + encodeURIComponent('20200315'); /**/
+        
+        fetch(url + queryParams)
+        .then(res => res.text())
+        .then(res)
+    </script>
+</body>
+</html>

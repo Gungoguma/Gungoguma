@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript - 1</title>
+    <script>
+        window.onload = () => {
+            // let my1 = document.querySelector("#my1");
+            // my1.style.color = "red";
+        }
+    </script>
+</head>
+<body>
+    <h1 id="my1"></h1>
+    <script>
+        let my1 = document.querySelector("#my1");
+        my1.innerHTML = new Date();
+
+        //데이터
+        //문자열, 숫자. 배열, 객체......
+        var a = 1;
+        var a = 2; //overwrite
+        console.log(a);
+
+        let b = 1; //IE 11이상부터
+        //let b = 2; //Identifier 'b' has already been declared
+        console.log(b);
+
+        const c = "C"; //상수에 값 할당 안됨.
+        //c = "D"; //Assignment to constant variable.
+
+        let arr1 = new Array();
+        let arr2 = [];
+        let arr3 = new Array(1,4,6,3,2);
+        let arr4 = [1,3,4,5,6];
+
+        let obj1 = new Object;
+        let obj2 = {};
+        console.log(arr3);
+        console.log(arr4);
+        console.log(obj1);
+        console.log(obj2);
+
+        let json = {
+            name : "홍길동",
+            age : 20,
+            showTime: function() {
+                console.log(new Date());
+            }
+        };
+        console.log(json);
+        json.info = () => {
+            console.log(this.name + " " + this.age);
+        }
+        json.info();
+        json.showTime();
+
+        const app = {
+            el: "#my1", //property (속성)
+            chcolor: function(c) { //method (클래스 안에 있는 함수)
+                document.querySelector(this.el).style.color = c;
+            }
+        }
+        app.chcolor("green");
+
+        class MyApp {
+            //생성자 = 클래스가 생성될 때 실행
+            constructor(w, h) {
+                this.w = w;
+                this.h = h;
+                
+            }
+            drawRect(bg) {
+                let div = document.createElement("div");
+                div.style.width = this.w + "px";
+                div.style.height = this.h + "px";
+                div.style.backgroundColor = bg;
+                document.body.appendChild(div);
+            }
+        }
+        var app1 = new MyApp(300,300);
+        app1.drawRect("red");
+        app1.drawRect("green");
+
+        var app2 = new MyApp(500,500);
+        app2.drawRect("blue");
+        app2.drawRect("pink");
+
+        function f1(t) {
+            let title = t;
+            console.log(t);
+        }
+        f1("hello");
+        let f2 = function(t) {
+            let title = t;
+            console.log(t);
+        }
+        f2("hi");
+        let f3 = (t) => {
+            let title = t;
+            console.log(t);
+        }
+        f3("hahaha");
+        </script>
+</body>
+</html>
