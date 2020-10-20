@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+		<h1>전국 미세먼지 현황</h1>
+		<form class="form-inline mb-2">
+			<input type="datetime" id="startDate" class="form-control">
+			<button class="btn-view btn btn-primary ml-2">보기</button>
+		</form>
+		<table class="table" id="dust-table">
+			<thead class="thead-dark">
+                <th>지역</th>
+				<th>발령일</th>
+				<th>경보단계</th>
+				<th>발령시간</th>
+				<th>발령농도</th>
+				<th>해제시간</th>
+				<th>최고농도</th>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+    <script>
+
+    let dust_data = [];
+
+    const getDustData = async () => {
+			//let startDate = "20201001";
+			//let endDate = "20201020";
+			let startDate = $("#startDate").val();
+            
+            var url = 'http://openapi.airkorea.or.kr/openapi/services/rest/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'; /*URL*/
+            var queryParams = '?' + encodeURIComponent('ServiceKey') + '='+'jcIUkbLrbEACktne0FjnUihbrBs7gOUYb5Vgf39ZDDqt9JEZqoON3f%2BeQr5D9kERtxVIC3iJvODcbroqyBYRhQ%3D%3D'; /*Service Key*/
+            queryParams += '&' + encodeURIComponent('ServiceKey') + '=' + encodeURIComponent('jcIUkbLrbEACktne0FjnUihbrBs7gOUYb5Vgf39ZDDqt9JEZqoON3f%2BeQr5D9kERtxVIC3iJvODcbroqyBYRhQ%3D%3D'); /**/
+            queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('3'); /**/
+            queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
+            queryParams += '&' + encodeURIComponent('year') + '=' + encodeURIComponent(startDate); /**/
+            queryParams += '&' + encodeURIComponent('itemCode') + '=' + encodeURIComponent('PM10'); /**/
+
+			let dust_url = url + queryParams;
+			let response = await fetch(dust_url);
+			let txt = await response.text();
+			let xml = await (new window.DOMParser()).parseFromString(txt, 'text/xml');
+            dust_data = await xml2json(xml);
+			listData(dust_data.items);
+		}
+
+        const listData = (data) => {
+			console.log(data);
+			$("#dust-table tbody").html("");
+			for(let i=0; i<data.length; i++) {
+                    let tr = `
+                    <tr>
+                        <td>${data[i].name}</td>
+						<td>${data[i].date}</td>
+						<td>${data[i].step}</td>
+						<td>${data[i].time}</td>
+                        <td>${data[i].val}</td>
+						<td>${data[i].clear}</td>
+						<td>${data[i].max}</td>
+					</tr>
+				`;
+				$("#dust-table tbody").prepend(tr);
+            }
+        }
+
+        const xml2json = (xml) => {
+			let data = {};
+			let body = $(xml).find("body")[0];
+			data.total = $(body).find("totalCount")[0].innerHTML;
+			data.page = $(body).find("pageNo")[0].innerHTML;
+			let items = $(body).find("item");
+			data.items = [];
+			for( let i=0; i<items.length; i++) {
+				let item = {};
+				item.date = $(items[i]).find("dataDate").text();
+				item.step = $(items[i]).find("issueGbn").text();
+                item.time = $(items[i]).find("issueTime").text();
+                item.name = $(items[i]).find("districtName").text();
+				item.val = $(items[i]).find("issueVal").text();
+				item.clear = $(items[i]).find("clearTime").text();
+				item.max = $(items[i]).find("clearVal").text();
+				data.items.push(item);
+			}
+			return data;
+		}
+
+        const init = () => {
+			let today = new Date();
+			let yy = today.getFullYear();
+
+
+			let startDate = yy 
+			$("#startDate").val(startDate);
+			getDustData();
+		}
+
+		$(".btn-view").on("click", function(event){
+			event.preventDefault();
+			getDustData();
+		});
+
+		init();
+
+    </script>
+</body>
+</html>
