@@ -8,10 +8,30 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
+	<div class="container-fluid">
+		<h1>코로나 발생 현황</h1>
+		<form class="form-inline mb-2">
+			<input type="date" id="startDate" class="form-control">
+			~
+			<input type="date" id="endDate" class="form-control">
+			<button class="btn-view btn btn-primary ml-2">보기</button>
+		</form>
+		<table class="table" id="corona-table">
+			<thead class="thead-dark">
+				<th>날짜</th>
+				<th>시간</th>
+				<th>확진자</th>
+				<th>치료중</th>
+				<th>사망</th>
+				<th>해제</th>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
 	<script>
 		var url = 'http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson'; /*URL*/
-		var queryParams = '?' + encodeURIComponent('ServiceKey') + '='+'서비스키'; /*Service Key*/
-		queryParams += '&' + encodeURIComponent('ServiceKey') + '=' + encodeURIComponent('서비스키'); /**/
+		var queryParams = '?' + encodeURIComponent('ServiceKey') + '='+('서비스키'); 
+		queryParams += '&' + encodeURIComponent('ServiceKey') + '=' + encodeURIComponent('서비스키');
 		queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
 		queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('100'); /**/
 		
@@ -25,8 +45,12 @@
 
 		const getCoronaData = async () => {
 			let corona_url = url + queryParams;
-			let startDate = "20201001";
-			let endDate = "20201020";
+			//let startDate = "20201001";
+			//let endDate = "20201020";
+			let startDate = $("#startDate").val();
+			let endDate = $("#endDate").val();
+			startDate = startDate.replace(/-/g,'');
+			endDate = endDate.replace(/-/g,'');
 			corona_url += '&' + encodeURIComponent('startCreateDt') + '=' + encodeURIComponent(startDate);
 			corona_url += '&' + encodeURIComponent('endCreateDt') + '=' + encodeURIComponent(endDate); 
 			let response = await fetch(corona_url);
@@ -34,7 +58,52 @@
 			let xml = await (new window.DOMParser()).parseFromString(txt, 'text/xml');
 			//console.log(xml);
 			corona_data = await xml2json(xml);
-			console.log(corona_data);
+			listData(corona_data.items);
+		}
+
+		const listData = (data) => {
+			console.log(data);
+			$("#corona-table tbody").html("");
+			for(let i=0; i<data.length; i++) {
+                if(i == data.length - 1) {
+                    let tr = `
+					<tr>
+						<td>${data[i].date}</td>
+						<td>${data[i].time}</td>
+						<td>${data[i].case}</td>
+						<td>${data[i].care}</td>
+						<td>${data[i].death}</td>
+						<td>${data[i].clear}</td>
+					</tr>
+				`;
+				$("#corona-table tbody").prepend(tr);
+                }
+                else {
+                    let a = (`${data[i].case}` - `${data[i+1].case}`);
+                    let b = (`${data[i].care}` - `${data[i+1].care}`);
+                    let c = (`${data[i].death}` - `${data[i+1].death}`);
+                    let d = (`${data[i].clear}` - `${data[i+1].clear}`);
+                        if ( b >= 0) {
+                            b = ("+" + b);
+                        }
+
+                    
+                    console.log(a);
+                    let tr = `
+                        <tr>
+                            <td>${data[i].date}</td>
+                            <td>${data[i].time}</td>
+                            <td>${data[i].case}(+${a})</td>
+                            <td>${data[i].care}(${b})</td>
+                            <td>${data[i].death}(+${c})</td>
+                            <td>${data[i].clear}(+${d})</td>
+                        </tr>
+                    `;
+                    $("#corona-table tbody").prepend(tr);
+                }
+
+                
+			}
 		}
 
 		const xml2json = (xml) => {
@@ -57,7 +126,27 @@
 			return data;
 		}
 
-		getCoronaData();
+		const init = () => {
+			let today = new Date();
+			let yy = today.getFullYear();
+			let mm = today.getMonth() + 1;
+			let dd = today.getDate();
+			if( mm < 10 ) mm = "0" + mm;
+			if( dd < 10 ) dd = "0" + dd;
+			let startDate = yy + "-" + mm + "-" + dd;
+			$("#startDate").val(startDate);
+			$("#endDate").val(startDate);
+			getCoronaData();
+		}
+
+		$(".btn-view").on("click", function(event){
+			event.preventDefault();
+			getCoronaData();
+		});
+
+		init();
+
+		
 
 
 	</script>
