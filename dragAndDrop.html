@@ -9,10 +9,11 @@
     <style>
         #content{
             position:relative;
+            height: auto;
         }
         .mydiv{
             border:1px solid #368ABB;
-            background-color:#43A4DC;
+            
             position:absolute;
             width:50px;
             height: 50px;
@@ -39,6 +40,13 @@
         #div1, #div2{ top:20px; }
         #div3, #div4{ top:100px; }
         #div5, #div6{ top:180px; }
+        #div1 { background-color:red; }
+        #div3 { background-color:green; }
+        #div5 { background-color:blue; }
+        #div2 { background-color:green; }
+        #div4 { background-color:red; }
+        #div6 { background-color:blue; }
+
 
         .line{
             position:absolute;
@@ -49,20 +57,23 @@
     </style>
 </head>
 <body>
-
+    <div>
+        <button onclick="creaLines()">초기화</button>
+    </div>
     <div id="content">
-        <div id="div1" class="mydiv drag"></div>
-        <div id="div2" class="mydiv drop"></div>
-        <div id="div3" class="mydiv drag"></div>
-        <div id="div4" class="mydiv drop"></div>    
-        <div id="div5" class="mydiv drag"></div>
-        <div id="div6" class="mydiv drop"></div>        
+        <div id="div1" class="mydiv drag" data-bgc="red"></div>
+        <div id="div2" class="mydiv drop" data-bgc="green"></div>
+        <div id="div3" class="mydiv drag" data-bgc="green"></div>
+        <div id="div4" class="mydiv drop" data-bgc="red"></div>    
+        <div id="div5" class="mydiv drag" data-bgc="blue"></div>
+        <div id="div6" class="mydiv drop" data-bgc="blue"></div>        
     </div>
 
     <script>
         let from, to;
+        let fromColor, toColor;
         let fT=0, tT=0, fL=0, tL=0;
-        function adjustLine(){
+        function drawLine(){
             let line = document.createElement("div");
             line.classList.add("line");
             var CA   = Math.abs(tT - fT);
@@ -98,23 +109,34 @@
         }
         
         $(".drag").draggable({
-            revert:false,
+            revert: true,
             start: function(event, ui){
                 from = this;
-                $(from).draggable("option", "revert", false);
+                fromColor = $(this).attr("data-bgc");
                 fT = from.offsetTop  + from.offsetHeight/2;
                 fL = from.offsetLeft + from.offsetWidth/2;
             }
         });
         $( ".drop" ).droppable({
-            drop: async function( event, ui ) {
+            drop: function( event, ui ) {
                 to = this;
+                toColor = $(this).attr("data-bgc");
                 tT = to.offsetTop    + to.offsetHeight/2;
                 tL = to.offsetLeft   + to.offsetWidth/2; 
-                $(from).draggable("option", "revert", true);
-                await adjustLine();
+                if( fromColor == toColor ) {
+                    drawLine();
+                }
+                
             }
         });
+
+        const creaLines = () => {
+            let lines = $(".line");
+            for(let i=0;i<lines.length; i++) {
+                $(lines[i]).remove();
+            }
+        }
     </script>
+<!-- original code from "https://jsfiddle.net/rdamasceno/o3Lroapa/5/"     -->
 </body>
 </html>
