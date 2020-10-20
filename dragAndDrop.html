@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        #content{
+            position:relative;
+        }
+        .mydiv{
+            border:1px solid #368ABB;
+            background-color:#43A4DC;
+            position:absolute;
+            width:50px;
+            height: 50px;
+        }
+        .mydiv:after{
+            content:no-close-quote;
+            position:absolute;
+            top:50%;
+            left:50%;
+            background-color:black;
+            width:4px;
+            height:4px;
+            border-radius:50%;
+            margin-left:-2px;
+            margin-top:-2px;
+        }
+
+        .drag {
+            left:20px;
+        }
+        .drop {
+            left:200px;
+        }
+        #div1, #div2{ top:20px; }
+        #div3, #div4{ top:100px; }
+        #div5, #div6{ top:180px; }
+
+        .line{
+            position:absolute;
+            width:1px;
+            background-color:red;
+        }  
+
+    </style>
+</head>
+<body>
+
+    <div id="content">
+        <div id="div1" class="mydiv drag"></div>
+        <div id="div2" class="mydiv drop"></div>
+        <div id="div3" class="mydiv drag"></div>
+        <div id="div4" class="mydiv drop"></div>    
+        <div id="div5" class="mydiv drag"></div>
+        <div id="div6" class="mydiv drop"></div>        
+    </div>
+
+    <script>
+        let from, to;
+        let fT=0, tT=0, fL=0, tL=0;
+        function adjustLine(){
+            let line = document.createElement("div");
+            line.classList.add("line");
+            var CA   = Math.abs(tT - fT);
+            var CO   = Math.abs(tL - fL);
+            var H    = Math.sqrt(CA*CA + CO*CO);
+            var ANG  = 180 / Math.PI * Math.acos( CA/H );
+
+            if(tT > fT){
+                var top  = (tT-fT)/2 + fT;
+            }else{
+                var top  = (fT-tT)/2 + tT;
+            }
+            if(tL > fL){
+                var left = (tL-fL)/2 + fL;
+            }else{
+                var left = (fL-tL)/2 + tL;
+            }
+
+            if(( fT < tT && fL < tL) || ( tT < fT && tL < fL) || (fT > tT && fL > tL) || (tT > fT && tL > fL)){
+                ANG *= -1;
+            }
+            top-= H/2;
+
+            line.style["-webkit-transform"] = 'rotate('+ ANG +'deg)';
+            line.style["-moz-transform"] = 'rotate('+ ANG +'deg)';
+            line.style["-ms-transform"] = 'rotate('+ ANG +'deg)';
+            line.style["-o-transform"] = 'rotate('+ ANG +'deg)';
+            line.style["-transform"] = 'rotate('+ ANG +'deg)';
+            line.style.top    = top+'px';
+            line.style.left   = left+'px';
+            line.style.height = H + 'px';
+            document.querySelector("#content").appendChild(line);
+        }
+        
+        $(".drag").draggable({
+            revert:false,
+            start: function(event, ui){
+                from = this;
+                $(from).draggable("option", "revert", false);
+                fT = from.offsetTop  + from.offsetHeight/2;
+                fL = from.offsetLeft + from.offsetWidth/2;
+            }
+        });
+        $( ".drop" ).droppable({
+            drop: async function( event, ui ) {
+                to = this;
+                tT = to.offsetTop    + to.offsetHeight/2;
+                tL = to.offsetLeft   + to.offsetWidth/2; 
+                $(from).draggable("option", "revert", true);
+                await adjustLine();
+            }
+        });
+    </script>
+</body>
+</html>
