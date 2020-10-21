@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Side Bar</title>
+	<style>
+		#side-bar {
+			height: 100%;
+			width: 0;
+			position: fixed;
+			z-index: 999;
+			top: 0;
+			left: 0;
+			background-color: #333;
+			transition: 0.5s;
+			padding-top: 50px;
+		}
+		#side-bar a {
+			padding: 10px;
+			font-size: 20px;
+			color: #fff;
+			display: block;
+		}
+		#side-bar .btn-close {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			font-size: 30px;
+			color: #fff;
+			text-decoration: none;
+		}
+
+		.btn-side-open {
+			font-size: 20px;
+			background-color: #333;
+			color: #fff;
+			padding: 5px 10px;
+			border: none;
+		}
+		#content {
+			transition: margin-left .5s;
+			padding: 15px;
+		}
+	</style>
+</head>
+<body>
+	<div id="side-bar">
+		<a href="#!" class="btn-close" onclick="closeSideBar();">X</a>
+		<a href="#!">HOME</a>		
+		<a href="#!">Services</a>		
+		<a href="#!">Products</a>	
+		<a href="#!">Downloads</a>
+		<a href="#!">Documents</a>
+	</div>
+	<div id="content">
+		<button class="btn-side-open" onclick="viewSideBar();">☰ View Side Bar</button>
+		<h1>Hello Side Bar</h1>
+		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum in dignissimos minima, vel facere, ad provident, sapiente inventore voluptas fugiat dolore, debitis ab perspiciatis dolorem labore illo aperiam perferendis consequatur.</p>
+	</div>
+
+	<script>
+		let sideBar = document.querySelector("#side-bar");
+		let content = document.querySelector("#content");
+		const viewSideBar = () => {
+			sideBar.style.width = "300px";
+			content.style.marginLeft = "300px";
+		}
+		const closeSideBar = () => {
+			sideBar.style.width = "0";
+			content.style.marginLeft = "0";
+		}
+	</script>
+</body>
+</html>
