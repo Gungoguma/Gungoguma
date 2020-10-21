@@ -9,12 +9,13 @@
 			height: 100%;
 			width: 0;
 			position: fixed;
-			z-index: 999;
+			z-index: 1;
 			top: 0;
 			left: 0;
 			background-color: #333;
 			transition: 0.5s;
 			padding-top: 50px;
+            overflow: hidden;
 		}
 		#side-bar a {
 			padding: 10px;
@@ -41,6 +42,7 @@
 		#content {
 			transition: margin-left .5s;
 			padding: 15px;
+            z-index: 2;
 		}
 	</style>
 </head>
